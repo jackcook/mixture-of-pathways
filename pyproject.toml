@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pathways"
+version = "0.1.0"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+  "click~=8.1.8",
+  "datasets~=4.0.0",
+  "mod_cog @ git+https://github.com/jackcook/mod_cog@main#9f91698",
+  "neurogym~=2.0.0",
+  "schedulefree~=1.4.1",
+  "tensorboard~=2.20.0",
+  "torch~=2.7.1",
+  "tqdm~=4.67.1",
+  "wandb~=0.21.0",
+]
+authors = [
+  {name = "Jack Cook", email = "hello@jackcook.com"},
+]
+description = "Code for the paper 'Brain-Like Pathways Form in Models with Heterogeneous Experts'"
+readme = "README.md"
+license = "CC-BY-4.0"
+license-files = ["LICENSE.md"]
+keywords = ["pathways", "heterogeneous", "mixture of experts", "neurogym"]
+
+[project.optional-dependencies]
+analysis = [
+  "ipykernel~=6.30.0",
+  "ipywidgets~=8.1.7",
+  "jupyter~=1.1.1",
+  "matplotlib~=3.9.4",
+  "numpy~=2.1.3",
+  "pandas~=2.3.1",
+  "scikit-learn~=1.7.1",
+  "scipy~=1.14.1",
+  "tbparse~=0.0.9",
+]
+modal = [
+  "inquirer~=3.4.0",
+  "modal~=1.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/jackcook/pathways"
+Documentation = "https://github.com/jackcook/pathways/blob/main/README.md"
+Repository = "https://github.com/jackcook/pathways.git"
+
+[tool.setuptools]
+packages = ["pathways"]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+# TODO: Remove *.ipynb
+exclude = ["build", "dist", "env", ".venv", "*.ipynb"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+ignore = [
+  "C901",
+  "D100",
+  "D104",
+  "D202",
+  "D203",
+  "D205",
+  "D212",
+  "D413",
+  "E402",
+  "FIX002",
+  "INP001",
+  "N812",
+  "PLC0415",
+  "PLR0913",
+  "PLW0602",
+  "S603",
+  "S607",
+  "TD003",
+]
+select = [
+  "ALL",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"cli/*" = [
+  "T201",
+]
