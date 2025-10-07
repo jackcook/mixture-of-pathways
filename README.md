@@ -62,12 +62,28 @@ A couple notable ones are:
 More documentation will be provided soon!
 If you have questions in the meantime, feel free to file an issue or get in touch directly.
 
-## Lint
+## Linting
 
 To make sure any code changes are compliant with our linting rules, please run `ruff` before you commit:
 
 ```bash
 ruff check
+```
+
+## Citation
+
+Please use the following BibTeX entry to cite this work:
+
+```tex
+@misc{cook2025brainlikeprocessingpathwaysform,
+      title={Brain-Like Processing Pathways Form in Models With Heterogeneous Experts},
+      author={Jack Cook and Danyal Akarca and Rui Ponte Costa and Jascha Achterberg},
+      year={2025},
+      eprint={2506.02813},
+      archivePrefix={arXiv},
+      primaryClass={q-bio.NC},
+      url={https://arxiv.org/abs/2506.02813},
+}
 ```
 
 ## License
