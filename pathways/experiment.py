@@ -119,7 +119,10 @@ class Experiment:
                     self.optimizer.zero_grad()
 
                     inputs, labels = (
-                        batch["inputs"].to(self.device, dtype=torch.float16),
+                        batch["inputs"].to(
+                            self.device,
+                            dtype=torch.float32 if MOP_DISABLE_AMP else torch.float16,
+                        ),
                         batch["labels"].to(self.device).flatten(),
                     )
 
@@ -273,7 +276,10 @@ class Experiment:
                 break
 
             inputs, labels = (
-                batch["inputs"].to(self.device, dtype=torch.float16),
+                batch["inputs"].to(
+                    self.device,
+                    dtype=torch.float32 if MOP_DISABLE_AMP else torch.float16,
+                ),
                 batch["labels"].to(self.device).flatten(),
             )
 
