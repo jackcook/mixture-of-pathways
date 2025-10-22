@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+import warnings
 from pathlib import Path
 
 import torch
@@ -13,6 +15,7 @@ from .model import Model
 from .task import Task
 from .utils import is_wandb_configured
 
+MOP_DISABLE_AMP = os.getenv("MOP_DISABLE_AMP", "FALSE") == "TRUE"
 RUNS_PATH = Path("/runs") if Path("/runs").exists() else Path("runs")
 
 logger = logging.getLogger(__name__)
@@ -98,7 +101,7 @@ class Experiment:
         before_response_criterion = nn.MSELoss()
         during_response_criterion = nn.CrossEntropyLoss()
 
-        scaler = torch.GradScaler()
+        scaler = torch.GradScaler(enabled=not MOP_DISABLE_AMP)
         dataloader = self.task.get_dataloader(
             num_samples=self.config.num_steps * self.config.batch_size,
             batch_size=self.config.batch_size,
@@ -123,6 +126,7 @@ class Experiment:
                     with torch.autocast(
                         device_type=self.config.device,
                         dtype=torch.float16,
+                        enabled=not MOP_DISABLE_AMP,
                     ):
                         # forward + backward + optimize
                         (outputs, task_ids, task_expert_usage_losses) = self.model(
@@ -161,6 +165,15 @@ class Experiment:
 
                         # Cost-based routing loss
                         for k in task_expert_usage_losses:
+                            if torch.isnan(task_action_losses[k]):
+                                warnings.warn(
+                                    f"Task action loss for task {k} is NaN. Consider "
+                                    "increasing your batch size to ensure samples from "
+                                    "all tasks are included in each batch.",
+                                    stacklevel=2,
+                                )
+                                continue
+
                             loss = loss + task_action_losses[k]
 
                             if self.config.cost_based_loss_alpha > 0:

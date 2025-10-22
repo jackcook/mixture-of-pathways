@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import UTC, datetime
 from pathlib import Path
@@ -161,6 +162,10 @@ from pathways.task import Task
 def run_experiment(**kwargs: dict[str, Any]) -> None:
     """Run an experiment from the command line."""
 
+    # Disable AMP if device is not CUDA
+    if kwargs["device"] != "cuda":
+        os.environ["MOP_DISABLE_AMP"] = "TRUE"
+
     # Ensure checkpoint exists
     if kwargs["checkpoint"] is not None and not Path(kwargs["checkpoint"]).exists():
         msg = f"Checkpoint {kwargs['checkpoint']} does not exist"
@@ -179,7 +184,9 @@ def run_experiment(**kwargs: dict[str, Any]) -> None:
                 raise ValueError(msg)
 
     # Set default run ID
-    run_id = kwargs["run_id"] or f"{'-'.join(kwargs['layers'])}"
+    run_id = kwargs["run_id"] or "_".join(
+        layer_desc.replace(",", "-") for layer_desc in kwargs["layers"]
+    )
 
     if not re.match(r"^\d{8}_\d{6}.*", run_id):
         run_id = f"{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}_{run_id}"

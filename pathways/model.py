@@ -1,3 +1,4 @@
+import os
 import warnings
 from pathlib import Path
 from typing import Any
@@ -7,6 +8,8 @@ import torch.nn.functional as F
 from torch import nn
 
 from .config import Config
+
+MOP_DISABLE_AMP = os.getenv("MOP_DISABLE_AMP", "FALSE") == "TRUE"
 
 
 class Expert(nn.Module):
@@ -91,7 +94,11 @@ class CostBasedRouter(nn.Module):
         self.relu = nn.ReLU()
         self.output_layer = nn.Linear(config.router_dim, len(expert_dims))
 
-    @torch.autocast(device_type="cuda", dtype=torch.float32)
+    @torch.autocast(
+        device_type="cuda",
+        dtype=torch.float32,
+        enabled=not MOP_DISABLE_AMP,
+    )
     def forward(
         self,
         prev_layer_output: torch.Tensor,
@@ -491,7 +498,11 @@ class Model(nn.Module):
         )
         self.to(self.config.device)
 
-    @torch.autocast(device_type="cuda", dtype=torch.float16)
+    @torch.autocast(
+        device_type="cuda",
+        dtype=torch.float16,
+        enabled=not MOP_DISABLE_AMP,
+    )
     def forward(
         self,
         x: torch.Tensor,
