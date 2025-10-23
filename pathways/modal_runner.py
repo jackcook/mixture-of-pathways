@@ -19,6 +19,14 @@ with experiment_image.imports():
     from .experiment import Experiment
     from .task import Task
 
+notebook_image = (
+    experiment_image.add_local_file(
+        "pyproject.toml", "/root/pathways/pyproject.toml", copy=True,
+    )
+    .add_local_dir("pathways", "/root/pathways/pathways", copy=True)
+    .run_commands("pip install -e /root/pathways")
+)
+
 tensorboard_image = modal.Image.debian_slim().pip_install("tensorboard")
 
 
@@ -51,3 +59,8 @@ def run_experiment(**kwargs: dict[str, Any]) -> None:
 def tensorboard() -> None:
     """Run TensorBoard on Modal."""
     subprocess.Popen(["tensorboard", "--logdir", "/runs", "--bind_all"])
+
+
+@app.function(image=notebook_image)
+def analysis() -> None:
+    """Provide and image for running analysis in a Modal notebook."""
